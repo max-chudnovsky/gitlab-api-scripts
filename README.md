@@ -1,12 +1,11 @@
-# GitLab Deploy Key Management Scripts
+# GitLab Deploy Key Management Script
 
 ## Overview
-This repository contains two Bash scripts to help manage deploy keys for GitLab projects and groups:
+This repository contains a single Bash script to help manage deploy keys for GitLab projects and groups:
 
-- **deploy-key.sh**: Add or enable deploy keys on one or more GitLab projects.
-- **show-keys.sh**: List all deploy keys for a single project or all projects in a group.
+- **deploy-key.sh**: Add, enable, disable, or list deploy keys on one or more GitLab projects or groups.
 
-Both scripts use the GitLab API and require a personal access token and the Go-based `yq` tool (Mike Farah's yq, version 4+).
+The script uses the GitLab API and requires a personal access token and the Go-based `yq` tool (Mike Farah's yq, version 4+).
 
 ---
 
@@ -14,7 +13,7 @@ Both scripts use the GitLab API and require a personal access token and the Go-b
 - **Bash** (tested on bash 5+)
 - **curl**
 - **yq** (Go-based, version 4 or later: https://github.com/mikefarah/yq)
-- **A GitLab personal access token** with appropriate permissions (at least Reporter for reading, Maintainer for adding keys)
+- **A GitLab personal access token** with appropriate permissions (at least Reporter for reading, Maintainer for adding/removing keys)
 - **Environment variables:**
   - `GL_ACCESS_TOKEN` (your GitLab personal access token)
   - `GITLAB_API` (your GitLab API base URL, e.g. `https://gitlab.example.com/api/v4`)
@@ -23,8 +22,8 @@ Both scripts use the GitLab API and require a personal access token and the Go-b
 
 ## Usage
 
-### 1. `deploy-key.sh`
-Add or enable a deploy key on one or more GitLab projects.
+### `deploy-key.sh`
+Add, enable, disable, or list deploy keys on one or more GitLab projects.
 
 #### Usage
 ```
@@ -36,6 +35,8 @@ Add or enable a deploy key on one or more GitLab projects.
 - `-p <project_id>`      Project ID (operate on a single project)
 - `-a <title> <keyfile>` Add deploy key with <title> and public key file
 - `-e <deploy_key_id>`   Enable existing deploy key by ID
+- `-d <deploy_key_id>`   Disable (remove) deploy key by ID
+- `-l`                   List deploy keys (for group or project)
 - `-h`                   Show help message
 
 #### Examples
@@ -51,26 +52,21 @@ Add or enable a deploy key on one or more GitLab projects.
   ```
   ./deploy-key.sh -p 1234 -e 5678
   ```
-
----
-
-### 2. `show-keys.sh`
-List all deploy keys for a single project or all projects in a group.
-
-#### Usage
-```
-./show-keys.sh -g <group_id>
-./show-keys.sh -p <project_id>
-```
-
-#### Examples
+- Disable (remove) a deploy key from a project:
+  ```
+  ./deploy-key.sh -p 1234 -d 5678
+  ```
+- Disable (remove) a deploy key from all projects in a group:
+  ```
+  ./deploy-key.sh -g 1234 -d 5678
+  ```
 - List all deploy keys for all projects in a group:
   ```
-  ./show-keys.sh -g 1234
+  ./deploy-key.sh -g 1234 -l
   ```
 - List all deploy keys for a single project:
   ```
-  ./show-keys.sh -p 5678
+  ./deploy-key.sh -p 5678 -l
   ```
 
 ---
